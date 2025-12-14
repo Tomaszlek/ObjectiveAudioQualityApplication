@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1048</width>
+    <height>566</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="mainVerticalLayout" stretch="0,1,2">
+   <item>
+    <widget class="QLabel" name="info_label">
+     <property name="text">
+      <string>Odsłuch porównawczy w celu weryfikacji poprawności przygotowanych fragmentów.</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 14px; color: #AAAAAA; padding: 5px;</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTableWidget" name="pairs_table">
+     <column>
+      <property name="text">
+       <string>Plik referencyjny(oryginalny) (A)</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Plik do oceny jakości dźwięku (B)</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="players_layout">
+     <item>
+      <widget class="QFrame" name="frame_A">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_A">
+        <item>
+         <widget class="QLabel" name="title_label_A">
+          <property name="text">
+           <string>Odtwarzacz A (Plik oryginalny)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="filename_label_A">
+          <property name="text">
+           <string>Nie wczytano pliku</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">font-style: italic;</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <!-- Placeholder na waveform A -->
+         <widget class="QWidget" name="waveform_container_A" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="buttons_layout_A">
+          <item>
+           <widget class="QPushButton" name="btn_play_A">
+            <property name="text">
+             <string>Odtwórz</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_stop_A">
+            <property name="text">
+             <string>Zatrzymaj</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="frame_B">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_B">
+        <item>
+         <widget class="QLabel" name="title_label_B">
+          <property name="text">
+           <string>Odtwarzacz B (Plik do oceny jakości dźwięku)</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="filename_label_B">
+          <property name="text">
+           <string>Nie wczytano pliku</string>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">font-style: italic;</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <!-- Placeholder na waveform B -->
+         <widget class="QWidget" name="waveform_container_B" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="buttons_layout_B">
+          <item>
+           <widget class="QPushButton" name="btn_play_B">
+            <property name="text">
+             <string>Odtwórz</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btn_stop_B">
+            <property name="text">
+             <string>Zatrzymaj</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

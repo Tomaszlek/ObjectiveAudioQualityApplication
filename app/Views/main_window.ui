@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1920</width>
+    <height>1080</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Aplikacja do Oceny Jakości Dźwięku</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <!-- 1. GÓRNA CZĘŚĆ: STACKED WIDGET (ZAJMUJE WIĘKSZOŚĆ MIEJSCA) -->
+     <widget class="QStackedWidget" name="stackedWidget">
+     </widget>
+    </item>
+    <item>
+     <!-- 2. DOLNA CZĘŚĆ: POZIOMY LAYOUT NA PRZYCISKI -->
+     <layout class="QHBoxLayout" name="navigationLayout">
+      <item>
+       <widget class="QPushButton" name="nav_preprocessing">
+        <property name="text">
+         <string>Preprocessing</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="nav_subjective">
+        <property name="text">
+         <string>Odsłuch nagrań</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="nav_objective">
+        <property name="text">
+         <string>Ocena obiektywna</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar"/>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
