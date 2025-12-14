@@ -66,7 +66,7 @@ def find_best_fragment(y, sr, duration_seconds):
 
     step = sr # Krok co sekundę tak jak widać
     num_steps = (len(y) - samples_per_fragment) // step
-    print(f"[AUDIO-TOOLS] Rozpoczynam pętlę wyszukiwania ({num_steps} kroków).")
+    print(f"Rozpoczynam pętlę wyszukiwania ({num_steps} kroków).")
 
     start_time = time.time()
 

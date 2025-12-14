@@ -72,7 +72,7 @@ class AudioProcessor:
         corr = scipy.signal.correlate(y_ref[:n], y_deg[:n], mode='full', method='fft')
         lag = corr.argmax() - (n - 1)
 
-        print(f"[ALIGN] Przesunięcie: {lag} próbek")
+        print(f"Przesunięcie: {lag} próbek")
 
         # Korygujemy przesunięcie
         if lag > 0:

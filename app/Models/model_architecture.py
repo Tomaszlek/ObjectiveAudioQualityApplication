@@ -1,11 +1,8 @@
-# app/Models/model_architecture.py
-
 import torch.nn as nn
 import torchvision.models as models
 import torchvision.transforms as transforms
 
 
-# --- Model 1: Sieć CNN 1D ---
 class CNN1D_Paper(nn.Module):
     def __init__(self):
         super().__init__()
