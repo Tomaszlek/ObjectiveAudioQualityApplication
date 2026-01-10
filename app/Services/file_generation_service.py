@@ -13,24 +13,21 @@ class FileGenerationService:
         sr = audio_data['samplerate']
         original_path = Path(audio_data['path'])
 
-        # 1. Wycinanie fragmentu
+        # Wycinanie fragmentu
         start_time = params['start_time']
         duration = params['duration']
         start_sample = int(start_time * sr)
         end_sample = int((start_time + duration) * sr)
 
-        # Zabezpieczenie zakresu
         end_sample = min(end_sample, len(y))
         fragment = y[start_sample:end_sample]
 
-        # 2. Normalizacja głośności (zawsze)
         normalized_fragment = audio_tools.normalize_loudness(fragment, sr, target_lufs=-23.0)
 
-        # 3. Kopia do degradacji
+        # kopia do degradacji
         degraded = normalized_fragment.copy()
         is_degraded = False
 
-        # 4. Aplikowanie efektów (jeśli wybrano)
         cutoff_val = 0
         noise_val = 0
 
@@ -48,32 +45,26 @@ class FileGenerationService:
         if bitrate != "WAV (bez kompresji)":
             is_degraded = True
 
-        # 5. Generowanie Hasha (unikalna nazwa pliku)
+        # hash (unikalna nazwa pliku)
         params_str = f"{original_path.name}{start_sample}{end_sample}{bitrate}{noise_val}{cutoff_val}"
         file_hash = hashlib.md5(params_str.encode()).hexdigest()[:8]
 
-        # 6. Zapis plików
         ref_frag_name = f"{original_path.stem}_{file_hash}_ref.wav"
         ref_frag_path = self.output_dir / ref_frag_name
 
-        # Zapis REF (zawsze WAV)
         sf.write(str(ref_frag_path), normalized_fragment, sr)
 
         if is_degraded:
             deg_frag_name = f"{original_path.stem}_{file_hash}_deg.mp3"
             deg_frag_path = self.output_dir / deg_frag_name
-            # Zapis DEG (MP3)
             audio_tools.save_mp3(degraded, sr, str(deg_frag_path), bitrate)
         else:
-            # Brak degradacji -> Zapisz kopię jako WAV
+            # przy braku degradacji kopia jako vaw
             deg_frag_name = f"{original_path.stem}_{file_hash}_deg.wav"
             deg_frag_path = self.output_dir / deg_frag_name
             sf.write(str(deg_frag_path), normalized_fragment, sr)
             bitrate = "WAV"
 
-        print(f"Wygenerowano parę: {ref_frag_name} | {deg_frag_name}")
-
-        # 7. Zwracanie danych dla bazy
         return {
             'ref_path': str(ref_frag_path),
             'deg_path': str(deg_frag_path),

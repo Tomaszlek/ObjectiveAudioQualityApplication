@@ -17,10 +17,12 @@ class SingleFileProcessorWorker(QObject):
 
     def run(self):
         try:
-            print(f"[SINGLE] Przetwarzanie: {Path(self.path).name}")
+            print(f"Przetwarzanie: {Path(self.path).name}")
 
             # 1. Wczytanie i szukanie fragmentu
             y, sr = librosa.load(self.path, sr=48000, mono=True)
+            if len(y) == 0:
+                raise ValueError("Plik audio jest pusty (0 próbek).")
             start, end = audio_tools.find_best_fragment(y, sr, 7.0)
 
             # 2. Wycięcie i normalizacja

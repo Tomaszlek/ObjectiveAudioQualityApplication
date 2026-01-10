@@ -54,11 +54,11 @@ class PyTorchProcessor:
                     model.eval()
 
                     self.models[name] = model
-                    print(f"[AI] Załadowano model: {name}")
+                    print(f"Załadowano model: {name}")
                 except Exception as e:
-                    print(f"[AI] Błąd ładowania {name}: {e}")
+                    print(f"Błąd ładowania {name}: {e}")
             else:
-                print(f"[AI] Brak pliku modelu: {path.name}")
+                print(f"Brak pliku modelu: {path.name}")
 
     def get_tensor(self, y, sr, norm_type):
         # Generowanie Mel-spektrogramu
@@ -79,14 +79,10 @@ class PyTorchProcessor:
         return tensor.to(self.device)
 
     def analyze(self, path, selected_models):
-        if not selected_models: return {}
-
-        try:
-            # Wczytanie pliku - zawsze 48kHz Mono
-            y, sr = librosa.load(path, sr=48000, mono=True)
-        except Exception as e:
-            print(f"[AI] Błąd odczytu pliku {path}: {e}")
+        if not selected_models:
             return {}
+
+        y, sr = librosa.load(path, sr=48000, mono=True)
 
         results = {}
         tensor_cache = {}  # Cache żeby nie liczyć tego samego tensora 2 razy
@@ -121,6 +117,6 @@ class PyTorchProcessor:
                 score = max(1.0, min(5.0, score))
 
                 results[f"{name}_score"] = score
-                print(f"[AI] {name}: {score:.4f}")
+                print(f"{name}: {score:.4f}")
 
         return results

@@ -1,5 +1,3 @@
-# app/Views/playback/playback_view.py
-
 import numpy as np
 import librosa
 import sounddevice as sd

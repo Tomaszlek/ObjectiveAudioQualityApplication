@@ -69,7 +69,7 @@ class ObjectiveView(QWidget):
 
     def setup_ui(self):
         # Konfiguracja tabeli
-        cols = ["Plik REF", "Plik DEG", "VISQOL", "PEAQ", "CNN 1D", "EfficientNet", "Inception", "VGG19"]
+        cols = ["Plik referencyjny", "Plik do oceny jakości", "VISQOL", "PEAQ", "CNN 1D", "EfficientNet", "Inception", "VGG19"]
         self.table_results.setColumnCount(len(cols))
         self.table_results.setHorizontalHeaderLabels(cols)
         self.table_results.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
@@ -77,9 +77,9 @@ class ObjectiveView(QWidget):
         # Menu wczytywania
         menu = QMenu(self)
         menu.addAction("Pojedynczy plik").triggered.connect(self.load_single)
-        menu.addAction("Wiele plików (Batch)").triggered.connect(self.load_batch)
+        menu.addAction("Wiele plików").triggered.connect(self.load_batch)
         menu.addSeparator()
-        menu.addAction("Import pary (Ref -> Deg)").triggered.connect(self.import_pair)
+        menu.addAction("Import parami referencyjny - do oceny").triggered.connect(self.import_pair)
         self.btn_auto_process.setMenu(menu)
 
         self.btn_exportCsv.setEnabled(False)
@@ -143,6 +143,7 @@ class ObjectiveView(QWidget):
 
     def start_analysis(self):
         models = []
+
         if self.check_visqol.isChecked(): models.append('visqol')
         if self.check_peaq.isChecked(): models.append('peaq')
         if self.check_cnn_1d.isChecked(): models.append('cnn_1d')
@@ -241,7 +242,7 @@ class ObjectiveView(QWidget):
 
         self.auto_thread.started.connect(self.auto_worker.run)
         self.auto_worker.finished.connect(self.on_file_processed)
-        self.auto_worker.error.connect(lambda e: print(f"Błąd pliku: {e}"))
+        self.auto_worker.error.connect(self.on_file_error)
 
         self.auto_thread.start()
 
@@ -249,6 +250,11 @@ class ObjectiveView(QWidget):
         self.pair_added.emit(data)
         self.auto_thread.quit()
         self.auto_thread.wait()
+        self.process_queue()
+
+    def on_file_error(self, err_msg):
+        QMessageBox.error(self, "Błąd", err_msg)
+        self._cleanup_thread()
         self.process_queue()
 
     def import_pair(self):

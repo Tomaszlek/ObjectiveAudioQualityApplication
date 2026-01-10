@@ -17,7 +17,7 @@ class AnalysisWorker(QObject):
         self.is_running = True
 
     def run(self):
-        print("[WORKER] Start analizy...")
+        print("Start analizy...")
 
         try:
             # Konfiguracja ścieżek
@@ -37,7 +37,7 @@ class AnalysisWorker(QObject):
             for ref, deg in self.files:
                 if not self.is_running: break
 
-                print(f"[WORKER] Przetwarzam: {Path(deg).name}")
+                print(f"Przetwarzam: {Path(deg).name}")
                 result = {'deg_path': deg, 'status': 'Zakończono'}
 
                 # 1. Analiza MATLAB

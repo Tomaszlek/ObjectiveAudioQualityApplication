@@ -7,7 +7,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Wczytujemy interfejs użytkownika z pliku .ui
-        # Ścieżka jest budowana względem lokalizacji tego pliku
+        #wczytuje interfejs użytkownika z pliku .ui
         ui_path = Path(__file__).parent / "main_window.ui"
         uic.loadUi(ui_path, self)

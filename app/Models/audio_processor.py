@@ -1,4 +1,3 @@
-import matlab.engine
 import tempfile
 from pathlib import Path
 from pydub import AudioSegment
@@ -22,33 +21,33 @@ class AudioProcessor:
         self.temp_files = []
 
     def load_config(self, config_path: Path):
-        # Wczytuje ścieżki z pliku konfiguracyjnego
         config = configparser.ConfigParser()
         config.read(config_path, encoding='utf-8')
 
         root = config_path.parent
-        # Konwersja na ścieżki absolutne
+        # konwersja na ścieżki absolutne
         self.matlab_paths = [str((root / p).resolve()) for p in config['MATLAB_PATHS'].values()]
         self._configure_engine()
 
     def _configure_engine(self):
-        if not self.eng: return
-        # Dodajemy ścieżki do MATLABa żeby widział skrypty
+        if not self.eng:
+            return
+
         for path in self.matlab_paths:
             self.eng.addpath(path, nargout=0)
-        print(f"Skonfigurowano {len(self.matlab_paths)} ścieżek dla matlaba.")
+        print(f"skonfigurowano {len(self.matlab_paths)} ścieżek dla matlaba.")
 
-    def analyze_pair(self, ref_file: str, deg_file: str) -> dict:
-        if not self.eng: return {}
+    def analyze_pair(self, ref_file, deg_file):
+        if not self.eng:
+            return {}
 
         try:
-            # Ujednolicenie formatu do WAV 48kHz
+            # normalizacja glosnosci do -23 LUFS, 48kHz czestotliwosc probkowania, konwersja na mono dla visqol
             ref_wav, deg_wav_raw = self._normalize_audio(ref_file, deg_file)
 
-            # Wyrównanie czasowe i przycięcie długości (wymagane dla PEAQ)
+            # wyrównanie czasowe (wymagane dla PEAQ)
             deg_aligned = self._align_signals(ref_wav, deg_wav_raw)
 
-            print(f"Analiza pliku: {Path(deg_file).name} w Matlabie")
             mos = self.eng.runVisqolForPair(ref_wav, deg_aligned)
             odg, _ = self.eng.PEAQTest(ref_wav, deg_aligned, nargout=2)
 
@@ -60,19 +59,16 @@ class AudioProcessor:
             print(f"Błąd analizy w Matlabie: {e}")
             return {}
         finally:
-            self._cleanup_temp_files()
+            self.cleanup_temp_files()
 
-    def _align_signals(self, ref_path: str, deg_path: str) -> str:
-        # Wczytujemy pliki
+    def _align_signals(self, ref_path, deg_path):
         y_ref, sr = librosa.load(ref_path, sr=48000, mono=True)
-        y_deg, _ = librosa.load(deg_path, sr=48000, mono=True)
+        y_deg, sz = librosa.load(deg_path, sr=48000, mono=True)
 
-        # Obliczamy przesunięcie metodą korelacji (bierzemy max 30s dla wydajności)
+        # przesunięcie metodą korelacji (bierzemy max 7s tak jak sa fragmenty)
         n = min(len(y_ref), len(y_deg), 48000 * 30)
         corr = scipy.signal.correlate(y_ref[:n], y_deg[:n], mode='full', method='fft')
         lag = corr.argmax() - (n - 1)
-
-        print(f"Przesunięcie: {lag} próbek")
 
         # Korygujemy przesunięcie
         if lag > 0:
@@ -88,7 +84,6 @@ class AudioProcessor:
             padding = np.zeros(len(y_ref) - len(y_deg))
             y_deg = np.concatenate((y_deg, padding))
 
-        # Zapisujemy wyrównany plik tymczasowy
         with tempfile.NamedTemporaryFile(suffix="_aligned.wav", delete=False) as tf:
             out_path = tf.name
 
@@ -115,7 +110,7 @@ class AudioProcessor:
                 seg = seg.set_channels(1)
                 needs_export = True
 
-            # Jeśli to MP3, musimy rozpakować do WAV dla MATLABa
+            # jeśli to MP3, musimy rozpakować do wav, matlab tego potrzebuje
             if p.endswith('.mp3'):
                 needs_export = True
 
@@ -130,8 +125,8 @@ class AudioProcessor:
 
         return out_paths[0], out_paths[1]
 
-    def _cleanup_temp_files(self):
-        # Sprzątanie plików tymczasowych
+    def cleanup_temp_files(self):
+        # sprzątanie plików tymczasowych
         for f in self.temp_files:
             try:
                 Path(f).unlink(missing_ok=True)
