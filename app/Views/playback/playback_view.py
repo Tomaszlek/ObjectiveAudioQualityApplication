@@ -10,14 +10,12 @@ import warnings
 
 
 class SubjectiveView(QWidget):
-    def __init__(self):  # USUNIĘTO controller
+    def __init__(self):
         super().__init__()
 
-        # Krok 1: Wczytaj interfejs z pliku .ui
         ui_path = Path(__file__).parent / "playback_view.ui"
         uic.loadUi(ui_path, self)
 
-        # MVC: Lokalna kopia danych
         self.project_data = pd.DataFrame()
 
         # Cache audio, żeby nie ładować ciągle tego samego
@@ -25,11 +23,9 @@ class SubjectiveView(QWidget):
         self.current_ref_data = None
         self.current_deg_data = None
 
-        # Krok 2: Stwórz dynamiczne widżety wykresów
         self.waveform_plot_A = self._setup_plot_widget()
         self.waveform_plot_B = self._setup_plot_widget()
 
-        # Krok 3: Wstaw wykresy do placeholderów z pliku .ui
         layout_A = QVBoxLayout(self.waveform_container_A)
         layout_A.setContentsMargins(0, 0, 0, 0)
         layout_A.addWidget(self.waveform_plot_A)
@@ -38,21 +34,17 @@ class SubjectiveView(QWidget):
         layout_B.setContentsMargins(0, 0, 0, 0)
         layout_B.addWidget(self.waveform_plot_B)
 
-        # Krok 4: Skonfiguruj resztę UI i podłącz sygnały
         self._setup_table()
         self._connect_signals()
 
-        # Inicjalne odświeżenie (pustą tabelą)
+        # inicjalne odświeżenie (pustą tabelą)
         self.refresh_data()
 
-    # --- NOWA METODA MVC ---
     def set_data(self, df: pd.DataFrame):
-        """Metoda wywoływana przez kontroler, gdy dane się zmienią."""
         self.project_data = df
         self.refresh_data()
 
     def _setup_plot_widget(self) -> pg.PlotWidget:
-        """Konfiguruje i zwraca pojedynczy widżet wykresu."""
         plot = pg.PlotWidget()
         plot.setBackground(None)
         plot.getPlotItem().getAxis('left').setWidth(50)
@@ -62,13 +54,11 @@ class SubjectiveView(QWidget):
         return plot
 
     def _setup_table(self):
-        """Konfiguruje tabelę."""
         self.pairs_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Stretch)
         self.pairs_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.pairs_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
 
     def _connect_signals(self):
-        """Łączy sygnały widżetów z metodami."""
         self.pairs_table.currentCellChanged.connect(self.on_pair_selected)
 
         self.btn_play_A.clicked.connect(lambda: self.play_audio(self.current_ref_data))
@@ -77,7 +67,6 @@ class SubjectiveView(QWidget):
         self.btn_stop_B.clicked.connect(self.stop_playback)
 
     def refresh_data(self):
-        """Odświeża listę plików w tabeli korzystając z lokalnego self.project_data."""
         df = self.project_data
 
         self.pairs_table.blockSignals(True)
@@ -97,8 +86,7 @@ class SubjectiveView(QWidget):
         if self.pairs_table.rowCount() > 0:
             self.pairs_table.setCurrentCell(0, 0)
 
-    def on_pair_selected(self, currentRow, currentColumn, previousRow, previousColumn):
-        """Ładuje dane audio i rysuje waveformy dla wybranej pary."""
+    def on_pair_selected(self, currentRow):
         if currentRow < 0:
             return
 
@@ -119,7 +107,7 @@ class SubjectiveView(QWidget):
                 self.current_ref_data = {'data': data, 'samplerate': sr}
                 self.audio_data_cache[ref_path] = self.current_ref_data
             except Exception as e:
-                print(f"[ERROR] Nie udało się wczytać {ref_path}: {e}")
+                print(f"Nie udało się wczytać {ref_path}: {e}")
                 self.current_ref_data = None
 
         if deg_path in self.audio_data_cache:
@@ -130,7 +118,7 @@ class SubjectiveView(QWidget):
                 self.current_deg_data = {'data': data, 'samplerate': sr}
                 self.audio_data_cache[deg_path] = self.current_deg_data
             except Exception as e:
-                print(f"[ERROR] Nie udało się wczytać {deg_path}: {e}")
+                print(f"Nie udało się wczytać {deg_path}: {e}")
                 self.current_deg_data = None
 
         self.filename_label_A.setText(Path(ref_path).name)
@@ -146,12 +134,11 @@ class SubjectiveView(QWidget):
             self.waveform_plot_B.clear()
 
     def plot_waveform(self, plot_widget: pg.PlotWidget, data, samplerate):
-        """Rysuje wykres fali dźwiękowej na podanym widżecie."""
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", RuntimeWarning)
             plot_widget.clear()
 
-            # Optymalizacja: decymacja dla bardzo długich plików
+            # optymalizacja: wybieram 50k maks punktow dla bardzo długich plików
             max_points = 50000
             step = max(1, len(data) // max_points)
             plot_data = data[::step]

@@ -13,7 +13,7 @@ class FragmentFinderWorker(QObject):
 
     def run(self):
         try:
-            # Algorytm jest teraz w audio_tools, worker tylko go odpala w tle
+            # algorytm jest teraz w audio_tools, worker tylko go odpala w tle
             res = audio_tools.find_best_fragment(self.y, self.sr, self.dur)
             self.finished.emit(res)
         except Exception as e:

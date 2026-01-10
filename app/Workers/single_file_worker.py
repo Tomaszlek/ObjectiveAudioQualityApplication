@@ -18,26 +18,25 @@ class SingleFileProcessorWorker(QObject):
     def run(self):
         try:
             print(f"Przetwarzanie: {Path(self.path).name}")
-
-            # 1. Wczytanie i szukanie fragmentu
             y, sr = librosa.load(self.path, sr=48000, mono=True)
-            if len(y) == 0:
+
+            if len(y) == 0: # weryfikacja dlugosci pliku, jak jest 0, to nie puszczamy dalej
                 raise ValueError("Plik audio jest pusty (0 próbek).")
+
             start, end = audio_tools.find_best_fragment(y, sr, 7.0)
 
-            # 2. Wycięcie i normalizacja
+            # wycięcie i normalizacja
             frag = y[start:end]
             norm_frag = audio_tools.normalize_loudness(frag, sr)
 
-            # 3. Generowanie nazw
             orig_name = Path(self.path).stem
-            # Prosty hash żeby uniknąć kolizji nazw
+            # hash żeby uniknąć kolizji nazw
             h = hashlib.md5(f"{orig_name}{start}".encode()).hexdigest()[:6]
 
             ref_path = self.out_dir / f"{orig_name}_{h}_ref.wav"
             deg_path = self.out_dir / f"{orig_name}_{h}_deg.wav"
 
-            # 4. Zapis (kopia Ref -> Deg)
+            # zapis (kopia ref -> deg)
             sf.write(str(ref_path), norm_frag, sr)
             sf.write(str(deg_path), norm_frag, sr)
 
@@ -50,5 +49,5 @@ class SingleFileProcessorWorker(QObject):
             })
 
         except Exception as e:
-            print(f"[SINGLE] Błąd: {e}")
+            print(f"Błąd: {e}")
             self.error.emit(str(e))

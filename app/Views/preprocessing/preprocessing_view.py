@@ -95,7 +95,7 @@ class PreprocessingView(QtWidgets.QWidget):
 
         self.btn_find_best_fragment.clicked.connect(self.find_best_fragment)
 
-        # Tutaj zmiana: metoda teraz nazywa się on_process_click
+        # tutaj zmiana zaszla,  metoda teraz nazywa się on_process_click
         self.btn_process_and_add.clicked.connect(self.on_process_click)
 
     def load_files(self):
@@ -246,14 +246,17 @@ class PreprocessingView(QtWidgets.QWidget):
     def on_finding_finished(self, result):
         start_sample, end_sample = result
         sr = self.current_selection['samplerate']
+
         start_time = start_sample / sr
         end_time = end_sample / sr
+
         self.region.setRegion([start_time, end_time])
         self.spin_fragment_start.setValue(start_time)
         self.spin_fragment_duration.setValue(end_time - start_time)
         self.spin_fragment_end.setValue(end_time)
         self.btn_find_best_fragment.setText("Znajdź najlepszy automatycznie")
         self.btn_find_best_fragment.setEnabled(True)
+
         QMessageBox.information(self, "Sukces", "Znaleziono i zaznaczono optymalny fragment.")
 
     def on_finding_error(self, error_message):
@@ -262,12 +265,11 @@ class PreprocessingView(QtWidgets.QWidget):
         self.btn_find_best_fragment.setEnabled(True)
 
     def on_process_click(self):
-        #Zbiera dane i emituje sygnał do kontrolera.
         if self.current_selection['data'] is None:
             QMessageBox.warning(self, "Brak pliku", "Najpierw wybierz plik z listy.")
             return
 
-        # Pakujemy parametry w słownik
+        # pakuj parametry w słownik
         params = {
             'start_time': self.spin_fragment_start.value(),
             'duration': self.spin_fragment_duration.value(),
@@ -278,5 +280,4 @@ class PreprocessingView(QtWidgets.QWidget):
             'noise_level': self.spin_noise_level.value()
         }
 
-        # Emitujemy sygnał: dane audio + parametry
         self.processing_requested.emit(self.current_selection, params)

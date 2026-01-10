@@ -30,8 +30,7 @@ class CNN1D_Paper(nn.Module):
         )
 
     def forward(self, x):
-        # Oczekiwane wejście x: [batch, 1, 256, czas]
-        x = x.squeeze(1)  # -> [batch, 256, czas]
+        x = x.squeeze(1)
         x = self.conv_layers(x)
         x = self.fc_layers(x)
         return x
@@ -42,9 +41,8 @@ class InceptionV3_Paper(nn.Module):
         super().__init__()
 
         self.input_adapter = nn.Sequential(
-            # 1. Konwolucja na pełnym spektrogramie (1 -> 3 kanały)
             nn.Conv2d(in_channels=1, out_channels=3, kernel_size=11, stride=1, padding=0),
-            # 2. Resize do 299 wewnątrz modelu
+            # resize do 299 wewnątrz modelu
             transforms.Resize((299, 299), antialias=True)
         )
 
@@ -114,7 +112,6 @@ class EfficientNetV2_S_Paper(nn.Module):
         for param in self.backbone.parameters():
             param.requires_grad = False
 
-        # Dostosowanie classifiera
         self.backbone.classifier = nn.Sequential(
             nn.Flatten(),
             nn.Linear(1280 * 12 * 12, 256),

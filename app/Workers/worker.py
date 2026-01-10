@@ -17,20 +17,18 @@ class AnalysisWorker(QObject):
         self.is_running = True
 
     def run(self):
-        print("Start analizy...")
+        print("Start analizy")
 
         try:
             # Konfiguracja ścieżek
             base = Path(__file__).parent.parent
 
-            # MATLAB Processor
+            # ini matlaba
             mat_proc = AudioProcessor(self.eng)
             mat_proc.load_config(base / 'config.ini')
 
-            # PyTorch Processor
             torch_proc = PyTorchProcessor(base.parent / 'models')
 
-            # Podział modeli
             mat_models = [m for m in self.models if m in ['visqol', 'peaq']]
             torch_models = [m for m in self.models if m not in mat_models]
 
@@ -40,26 +38,28 @@ class AnalysisWorker(QObject):
                 print(f"Przetwarzam: {Path(deg).name}")
                 result = {'deg_path': deg, 'status': 'Zakończono'}
 
-                # 1. Analiza MATLAB
+                # najpierw matlabowe analizuja
                 if mat_models:
-                    # Funkcja zwraca słownik {'mos_lqo': ..., 'odg': ...}
+                    # funkcja zwraca słownik wartosci
                     mat_res = mat_proc.analyze_pair(ref, deg)
 
-                    # Filtrujemy tylko to, co chciał użytkownik
-                    if 'visqol' in mat_models: result['mos_lqo'] = mat_res.get('mos_lqo')
-                    if 'peaq' in mat_models:   result['odg'] = mat_res.get('odg')
+                    # tylko to, co chciał użytkownik, czyli jaki model
+                    if 'visqol' in mat_models:
+                        result['mos_lqo'] = mat_res.get('mos_lqo')
 
-                # 2. Analiza PyTorch
+                    if 'peaq' in mat_models:
+                        result['odg'] = mat_res.get('odg')
+
+                #potem pytorchowe
                 if torch_models:
-                    # Funkcja zwraca {'cnn_1d_score': ..., ...}
                     torch_res = torch_proc.analyze(deg, torch_models)
                     result.update(torch_res)
 
-                # Emitujemy wynik do widoku
+                # wyniki do widoku
                 self.progress.emit(result)
 
         except Exception as e:
-            print(f"[WORKER] Błąd krytyczny: {e}")
+            print(f"Błąd krytyczny: {e}")
             self.error.emit(str(e))
 
         self.finished.emit()

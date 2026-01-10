@@ -38,7 +38,7 @@ class DatabaseManager:
         self.connection.commit()
         print("Tabela 'audio_pairs' jest gotowa.")
 
-    def add_pair(self, pair_data: dict):
+    def add_pair(self, pair_data):
         sql = '''INSERT INTO audio_pairs(ref_path, deg_path, bitrate, noise_level, filter_cutoff, status)
                  VALUES(:ref_path, :deg_path, :bitrate, :noise_level, :filter_cutoff, :status)'''
         try:
@@ -63,7 +63,7 @@ class DatabaseManager:
             print(f"Błąd podczas wczytywania danych do DataFrame: {e}")
             return pd.DataFrame()
 
-    def update_subjective_score(self, deg_path: str, score: int):
+    def update_subjective_score(self, deg_path, score):
         sql = "UPDATE audio_pairs SET subjective_score = ? WHERE deg_path = ?"
         try:
             cursor = self.connection.cursor()
@@ -75,12 +75,12 @@ class DatabaseManager:
             print(f"Błąd podczas zapisu oceny subiektywnej: {e}")
             return False
 
-    def update_analysis_results(self, deg_path: str, results: dict):
-        # Lista dozwolonych kolumn
+    def update_analysis_results(self, deg_path, results: dict):
+        # lista dozwolonych kolumn do modyfikacji przy update wynikow
         allowed_columns = ['mos_lqo', 'odg', 'cnn_1d_score', 'efficientnet_score',
                            'inception_score', 'vgg19_score', 'status']
 
-        # Budujemy dynamicznie zapytanie SQL tylko dla kluczy, które są w allowed_columns
+        # dynamicznie zapytanie tylko dla kluczy, które są w allowed_columns
         set_clauses = [f"{col} = :{col}" for col in results.keys() if col in allowed_columns]
 
         if not set_clauses:

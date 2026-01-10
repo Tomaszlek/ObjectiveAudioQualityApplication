@@ -9,7 +9,7 @@ from app.Workers.single_file_worker import SingleFileProcessorWorker
 
 
 class ObjectiveView(QWidget):
-    # Sygnały dla kontrolera
+    # sygnały dla kontrolera
     results_ready = pyqtSignal(dict)
     pair_added = pyqtSignal(dict)
     clear_requested = pyqtSignal()
@@ -23,7 +23,7 @@ class ObjectiveView(QWidget):
         self.output_dir = None
         self.project_data = pd.DataFrame()
 
-        # Wątki
+        # zmienne - wątki
         self.worker_thread = None
         self.worker = None
         self.auto_thread = None
@@ -31,18 +31,17 @@ class ObjectiveView(QWidget):
         self.queue = []
 
         self.setup_ui()
-        self.apply_styles()  # <--- PRZYWRÓCONE STYLE
+        self.apply_styles()
         self.connect_signals()
 
     def apply_styles(self):
-        # Style CSS dopasowane do motywu Dark Teal
+        # wlasne style do widgetow, w miare je dopasowywalem do stylu dark_teal
         self.setStyleSheet("""
             QLabel { font-size: 10pt; color: #E0E0E0; }
             QGroupBox { font-size: 10pt; color: #E0E0E0; }
             QGroupBox::title { font-weight: bold; color: #FFFFFF; }
             QCheckBox { font-size: 10pt; color: #E0E0E0; }
 
-            /* Tabela */
             QTableWidget { 
                 font-size: 10pt; 
                 color: #E0E0E0; 
@@ -56,7 +55,6 @@ class ObjectiveView(QWidget):
                 padding: 4px; 
             }
 
-            /* Przyciski i Menu */
             QPushButton { font-size: 10pt; }
             QMenu { 
                 background-color: #354a48; 
@@ -89,7 +87,7 @@ class ObjectiveView(QWidget):
         self.btn_exportCsv.clicked.connect(self.export_results)
         self.btn_clearResults.clicked.connect(self.clear_results)
 
-        # Synchronizacja zaznaczenia na listach
+        # synchronizacja zaznaczenia na listach, tak aby zawsze zaznaczalo odpowiadajace sobie pary
         self.list_ref_files.currentRowChanged.connect(
             lambda r: self.list_deg_files.setCurrentRow(r) if r != -1 else None
         )
@@ -98,7 +96,7 @@ class ObjectiveView(QWidget):
         )
 
     def set_data(self, df: pd.DataFrame):
-        # Odbiera dane z kontrolera i rysuje tabelę od nowa
+        #jak odbierze dane, to rysuje tabele od zera
         self.project_data = df
 
         self.list_ref_files.blockSignals(True)
@@ -125,7 +123,7 @@ class ObjectiveView(QWidget):
             self.table_results.setItem(r, 0, QTableWidgetItem(Path(row.ref_path).name))
             self.table_results.setItem(r, 1, QTableWidgetItem(Path(row.deg_path).name))
 
-            # szybkie formatowanko
+            # szybkie formatowanko tabeli
             def fmt(val): return f"{float(val):.4f}" if pd.notna(val) else "-"
 
             self.table_results.setItem(r, 2, QTableWidgetItem(fmt(getattr(row, 'mos_lqo', None))))
@@ -138,8 +136,6 @@ class ObjectiveView(QWidget):
         self.list_ref_files.blockSignals(False)
         self.list_deg_files.blockSignals(False)
         self.btn_exportCsv.setEnabled(True)
-
-    # --- Worker Analizy ---
 
     def start_analysis(self):
         models = []
@@ -181,15 +177,14 @@ class ObjectiveView(QWidget):
         self.worker_thread.start()
 
     def update_project_data(self, result):
-        # 1. Wysyłamy do bazy
+        # wysyla wyniki do bazy, żeby była na bieżąco
         self.results_ready.emit(result)
         self.progressBar.setValue(self.progressBar.value() + 1)
 
-        # 2. Aktualizacja wizualna tabeli
         deg_path = result.get('deg_path')
-        if not deg_path: return
-
-        # Znajdź wiersz
+        if not deg_path:
+            return
+        # dla danej sciezki wyciagam indeks z tabeli i dopisuje na niej wyniki z metod
         name = Path(deg_path).name
         row_idx = -1
         for r in range(self.table_results.rowCount()):
@@ -197,7 +192,6 @@ class ObjectiveView(QWidget):
                 row_idx = r
                 break
 
-        # Wpisz wyniki
         if row_idx != -1:
             mapping = {
                 'mos_lqo': 2, 'odg': 3, 'cnn_1d_score': 4,
@@ -210,8 +204,6 @@ class ObjectiveView(QWidget):
     def on_analysis_finished(self):
         self.btn_startAnalysis.setEnabled(True)
         QMessageBox.information(self, "Info", "Analiza zakończona.")
-
-    # --- Worker Wczytywania ---
 
     def load_single(self):
         path, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Plik", "", "Audio (*.wav *.flac *.mp3 *.aiff)")

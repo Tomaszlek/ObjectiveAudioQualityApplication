@@ -12,8 +12,6 @@ class PyTorchProcessor:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.models = {}
 
-        # Konfiguracja modeli - pliki i typy normalizacji
-        # CNN1D wymaga konkretnego rozmiaru wejścia
         self.configs = {
             'cnn_1d': {
                 'file': 'cnn_1d_unipolared.pth',
@@ -40,14 +38,12 @@ class PyTorchProcessor:
         self.load_models()
 
     def load_models(self):
-        print(f"Używam urządzenia: {self.device}")
-
         for name, cfg in self.configs.items():
             path = self.models_dir / cfg['file']
 
             if path.exists():
                 try:
-                    # Inicjalizacja i ładowanie wag
+                    # inicjalizacja i ładowanie wag
                     model = cfg['cls']()
                     model.load_state_dict(torch.load(path, map_location=self.device), strict=False)
                     model.to(self.device)
@@ -61,20 +57,18 @@ class PyTorchProcessor:
                 print(f"Brak pliku modelu: {path.name}")
 
     def get_tensor(self, y, sr, norm_type):
-        # Generowanie Mel-spektrogramu
+        # generowanie spektrogramu
         S = librosa.feature.melspectrogram(y=y, sr=sr, n_fft=2048, hop_length=256, n_mels=256)
         S_db = librosa.power_to_db(S, ref=np.max)
 
-        # Normalizacja Min-Max do zakresu [0, 1]
-        # Przyjmujemy min_db = -80
         S_db = np.clip(S_db, -80.0, 0.0)
         S_db = (S_db + 80.0) / 80.0
 
-        # Normalizacja Bipolar [-1, 1]
+        #  Bipolar [-1, 1]
         if norm_type == 'bipolar':
             S_db = (S_db * 2.0) - 1.0
 
-        # Konwersja do Tensora [1, 256, Time]
+        # konwersja na tensor
         tensor = torch.from_numpy(S_db).float().unsqueeze(0)
         return tensor.to(self.device)
 
@@ -100,7 +94,6 @@ class PyTorchProcessor:
 
                 input_tensor = tensor_cache[norm]
 
-                # Resize dla modeli które tego wymagają (np. CNN1D)
                 if 'resize' in cfg:
                     resizer = transforms.Resize(cfg['resize'], antialias=True)
                     input_tensor = resizer(input_tensor)
@@ -108,15 +101,12 @@ class PyTorchProcessor:
                 # Dodanie wymiaru batcha [1, 1, H, W]
                 input_tensor = input_tensor.unsqueeze(0)
 
-                # Predykcja
                 output = self.models[name](input_tensor)
                 raw_val = output.item()
 
-                # Skalowanie z (0-1) na skalę MOS (1-5)
                 score = (raw_val * 4.0) + 1.0
                 score = max(1.0, min(5.0, score))
 
                 results[f"{name}_score"] = score
                 print(f"{name}: {score:.4f}")
-
         return results
