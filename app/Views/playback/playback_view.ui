@@ -128,7 +128,6 @@
          </widget>
         </item>
         <item>
-         <!-- Placeholder na waveform B -->
          <widget class="QWidget" name="waveform_container_B" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">

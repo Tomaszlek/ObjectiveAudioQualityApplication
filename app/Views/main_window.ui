@@ -16,12 +16,10 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <!-- 1. GÓRNA CZĘŚĆ: STACKED WIDGET (ZAJMUJE WIĘKSZOŚĆ MIEJSCA) -->
      <widget class="QStackedWidget" name="stackedWidget">
      </widget>
     </item>
     <item>
-     <!-- 2. DOLNA CZĘŚĆ: POZIOMY LAYOUT NA PRZYCISKI -->
      <layout class="QHBoxLayout" name="navigationLayout">
       <item>
        <widget class="QPushButton" name="nav_preprocessing">
