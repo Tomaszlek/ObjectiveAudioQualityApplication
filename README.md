@@ -229,7 +229,7 @@ Contains model training pipeline with:
 - Train/validation/test metadata is cleaned to remove missing labels and missing spectrogram files.
 
 #### Data Structure Diagram
-![Training data structure](app/Data structure.jpg)
+![Training data structure](app/Data%20structure.jpg)
 *Visual diagram of the dataset structure and training metadata flow.*
 
 #### Data Structure Description
