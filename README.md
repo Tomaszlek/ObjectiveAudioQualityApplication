@@ -354,7 +354,24 @@ Key packages from `requirements.txt`:
 
 ## References
 
-- PEAQ: https://en.wikipedia.org/wiki/Perceptual_evaluation_of_audio_quality
-- Visqol: https://github.com/google/visqol
-- ITU loudness standard: https://www.itu.int/rec/R-REC-BS.1770
-- WebMUSHRA: https://webaudio.github.io/webmushra/
+### Neural Network Architectures
+- CNN 1D: Convolutional Neural Networks for Time Series Classification (Fawaz et al., 2019)
+- InceptionV3: Rethinking the Inception Architecture for Computer Vision (Szegedy et al., 2016)
+- VGG19: Very Deep Convolutional Networks for Large-Scale Image Recognition (Simonyan & Zisserman, 2015)
+- EfficientNet V2: EfficientNetV2: Smaller Models and Faster Training (Tan & Le, 2021)
+- Adam Optimizer: Adam: A Method for Stochastic Optimization (Kingma & Ba, 2015)
+
+### Audio Quality Assessment Algorithms
+- PEAQ: PEAQ — the ITU standard for objective measurement of perceived audio quality (Thiede et al., 2000)
+- PEAQ ITU Standard: Recommendation ITU-R BS.1387-2 - Method for objective measurements of perceived audio quality (ITU-R, 2023)
+- VISQOL: ViSQOL: an objective speech quality model (Hines et al., 2015)
+- ViSQOL v3: ViSQOL v3: An Open Source Production Ready Objective Speech and Audio Metric (Chinen et al., 2020)
+- ViSQOLAudio: Objective Assessment of Perceptual Audio Quality Using ViSQOLAudio (Sloan et al., 2017)
+- PEMO-Q: PEMO-Q—A New Method for Objective Audio Quality Assessment Using a Model of Auditory Perception (Huber & Kollmeier, 2006)
+
+### Related Research
+- Kasperuk & Zieliński (2022): Non-intrusive method for audio quality assessment of lossy-compressed music recordings using convolutional neural networks. International Journal of Electronics and Telecommunications, vol. 68, no. 4.
+- Mumtaz et al. (2022): Nonintrusive Perceptual Audio Quality Assessment for User-Generated Content Using Deep Learning. IEEE Transactions on Industrial Informatics, vol. 18, pp. 7780-7789.
+- Delgado & Herre (2020): Can we still use PEAQ? A Performance Analysis of the ITU Standard for the Objective Assessment of Perceived Audio Quality. In Twelfth International Conference on Quality of Multimedia Experience (QoMEX), Athlone.
+- EBU R128: R 128 - Loudness normalization and permitted maximum level of audio signals (EBU, 2023).
+- WebMUSHRA: webMUSHRA — A Comprehensive Framework for Web-based Listening Tests (Schoeffler et al., 2018).
