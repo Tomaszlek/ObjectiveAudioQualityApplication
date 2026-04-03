@@ -1,3 +1,4 @@
+# worker.py
 from PyQt6.QtCore import QObject, pyqtSignal
 from pathlib import Path
 from app.Models.audio_processor import AudioProcessor

@@ -1,3 +1,4 @@
+# main_window.py
 import sys
 from PyQt6 import QtWidgets, uic
 from pathlib import Path

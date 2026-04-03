@@ -1,3 +1,4 @@
+# app_controller.py
 import sys
 from pathlib import Path
 from PyQt6.QtWidgets import QMessageBox

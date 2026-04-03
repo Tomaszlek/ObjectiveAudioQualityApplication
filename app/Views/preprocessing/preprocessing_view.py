@@ -1,3 +1,4 @@
+# preprocessing_view.py
 from PyQt6 import QtWidgets, uic
 from PyQt6.QtGui import QFont
 from pathlib import Path

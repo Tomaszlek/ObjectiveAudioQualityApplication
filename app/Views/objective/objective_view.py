@@ -1,3 +1,4 @@
+# objective_view.py
 from PyQt6 import QtWidgets, uic
 from pathlib import Path
 from PyQt6.QtCore import QThread, pyqtSignal

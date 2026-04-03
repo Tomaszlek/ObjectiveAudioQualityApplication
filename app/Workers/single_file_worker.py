@@ -1,3 +1,4 @@
+# single_file_worker.py
 from PyQt6.QtCore import QObject, pyqtSignal
 from pathlib import Path
 import librosa
